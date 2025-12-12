@@ -126,28 +126,72 @@ const styles = StyleSheet.create({
                 </div>
             </div>
 
-            <div class="step">
+                        <div class="step">
                 <h3><span class="badge">৫</span> ওয়েব স্ক্রিপ্ট (script.js)</h3>
-                <p>আপনার ওয়েবসাইটের PDF ডাউনলোড ফাংশনটি এভাবে আপডেট করুন:</p>
+                <p>আপনার ওয়েবসাইটের PDF ডাউনলোড ফাংশনটি এভাবে আপডেট করুন (Expense Report এর জন্য):</p>
                 <div class="code-box">
                     <button class="copy-btn" onclick="copyCode('webJs')">Copy</button>
-                    <pre id="webJs">function downloadPDF() {
+                    <pre id="webJs">// পিডিএফ ডাউনলোড ফাংশন
+window.downloadPDF = function() {
+    if (!window.jspdf) return alert("PDF Library missing!");
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-    
-    // ... আপনার পিডিএফ ডিজাইন কোড ...
 
+    // 1. ডাটা এবং ক্যালকুলেশন
+    const totalAmount = currentData.reduce((sum, item) => sum + item.amount, 0);
+    const fromDate = document.getElementById('fromDate').value;
+    const toDate = document.getElementById('toDate').value;
+    
+    const fmt = (d) => d ? d.split('-').reverse().join('/') : '';
+    const dateRangeText = (fromDate && toDate) ? `${fmt(fromDate)} to ${fmt(toDate)}` : `Generated: ${new Date().toLocaleDateString('en-IN')}`;
+
+    // 2. পিডিএফ ডিজাইন (Header & Total)
+    doc.setFontSize(20); doc.setTextColor(41, 128, 185); doc.text("Expense Report", 14, 20);
+    doc.setFontSize(10); doc.setTextColor(100); doc.text(`Period: ${dateRangeText}`, 14, 27);
+
+    doc.setFontSize(11); doc.setTextColor(80); doc.text("Total Expenses:", 196, 18, { align: "right" }); 
+    doc.setFontSize(16); doc.setTextColor(220, 38, 38); doc.setFont("helvetica", "bold");
+    doc.text(`Rs. ${totalAmount.toLocaleString('en-IN')}`, 196, 26, { align: "right" });
+    doc.setFont("helvetica", "normal");
+
+    // 3. টেবিল তৈরি
+    const tableBody = currentData.map(item => [
+        formatDateDisplay(item.date), 
+        item.category || 'General', 
+        item.payee, 
+        item.purpose, 
+        `Rs. ${item.amount.toLocaleString('en-IN')}`
+    ]);
+
+    doc.autoTable({
+        startY: 35,
+        head: [['Date', 'Category', 'Payee', 'Purpose', 'Amount']],
+        body: tableBody,
+        foot: [[ { content: 'Grand Total', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold' } }, { content: `Rs. ${totalAmount.toLocaleString('en-IN')}`, styles: { halign: 'right', fontStyle: 'bold' } } ]],
+        theme: 'striped',
+        headStyles: { fillColor: [41, 128, 185], halign: 'left', fontStyle: 'bold', valign: 'middle' },
+        columnStyles: { 
+            0: { cellWidth: 25, halign: 'left' },
+            1: { halign: 'left' },
+            2: { halign: 'left' },
+            3: { halign: 'left' },
+            4: { halign: 'right', fontStyle: 'bold' }
+        },
+        styles: { fontSize: 9, cellPadding: 3, valign: 'middle' }
+    });
+
+    // 4. ডাউনলোড লজিক (Web vs App)
     if (window.ReactNativeWebView) {
-        // অ্যাপ হলে
+        // অ্যাপের জন্য
         const pdfData = doc.output('datauristring');
         window.ReactNativeWebView.postMessage(JSON.stringify({
             type: 'downloadPDF',
             data: pdfData, 
-            filename: 'gold_receipt.pdf'
+            filename: 'Expense_Report.pdf'
         }));
     } else {
-        // ব্রাউজার হলে
-        doc.save("gold_receipt.pdf");
+        // ওয়েবসাইটের জন্য
+        doc.save('Expense_Report.pdf');
     }
 }</pre>
                 </div>
