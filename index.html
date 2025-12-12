@@ -12,7 +12,7 @@
 
     <div class="container">
         <header>
-            <h1>🚀 Web to Android App (Ultimate Guide)</h1>
+            <h1>🚀 Web to Android App (Final Fix)</h1>
             <p>ওয়েবসাইট থেকে ১০০% এরর-ফ্রি অ্যাপ তৈরির কমপ্লিট ব্লু-প্রিন্ট</p>
         </header>
 
@@ -127,16 +127,7 @@ const styles = StyleSheet.create({
             </div>
 
             <div class="step">
-                <h3><span class="badge">৫</span> অ্যাপ প্রিভিউ (Test App)</h3>
-                <p>সবকিছু ঠিক আছে কিনা দেখতে নিচের কমান্ডটি দিন এবং মোবাইলে Expo Go অ্যাপ দিয়ে স্ক্যান করুন:</p>
-                <div class="code-box">
-                    <button class="copy-btn" onclick="copyCode('previewCmd')">Copy</button>
-                    <pre id="previewCmd">npx expo start</pre>
-                </div>
-            </div>
-
-            <div class="step">
-                <h3><span class="badge">৬</span> ওয়েব স্ক্রিপ্ট (script.js)</h3>
+                <h3><span class="badge">৫</span> ওয়েব স্ক্রিপ্ট (script.js)</h3>
                 <p>আপনার ওয়েবসাইটের PDF ডাউনলোড ফাংশনটি এভাবে আপডেট করুন (Expense Report এর জন্য):</p>
                 <div class="code-box">
                     <button class="copy-btn" onclick="copyCode('webJs')">Copy</button>
@@ -214,27 +205,26 @@ window.downloadPDF = function() {
             </div>
 
             <div class="step">
-                <h3><span class="badge">৭</span> EAS Init (এরর ফিক্স)</h3>
-                <p>GitHub এ বিল্ড ফেল হওয়া আটকাতে নিচের কমান্ডটি অবশ্যই রান করুন। এটি <code>app.json</code> এ প্রোজেক্ট আইডি যুক্ত করবে।</p>
+                <h3><span class="badge">৬</span> EAS কনফিগার</h3>
+                <p>EAS Error দূর করতে এই কমান্ডগুলো রান করুন এবং <code>app.json</code> এ ID তৈরি হয়েছে কিনা চেক করুন:</p>
                 <div class="code-box">
                     <button class="copy-btn" onclick="copyCode('easCmd')">Copy</button>
                     <pre id="easCmd">eas login
 eas init
 eas build:configure</pre>
                 </div>
-                <p style="margin-top:10px;">এরপর <code>eas.json</code> ফাইলে <code>preview</code> এর ভেতর <code>"buildType": "apk"</code> বসান।</p>
             </div>
 
             <div class="step">
-                <h3><span class="badge">৮</span> Keystore তৈরি (জরুরি)</h3>
-                <p>নিচের কমান্ডটি দিয়ে একবার ম্যানুয়াল বিল্ড শুরু করুন যাতে ক্রেডেনশিয়াল তৈরি হয়:</p>
+                <h3><span class="badge">৭</span> Keystore তৈরি (সবচেয়ে জরুরি ধাপ)</h3>
+                <p>GitHub এ বিল্ড ফেইল হওয়া আটকাতে এই ধাপটি <strong>অবশ্যই</strong> VS Code এ করুন:</p>
                 <div class="code-box">
                     <button class="copy-btn" onclick="copyCode('keyCmd')">Copy</button>
                     <pre id="keyCmd">eas build --platform android --profile preview</pre>
                 </div>
                 <div class="alert warning">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <strong>টিপস:</strong> "Generate new Keystore?" চাইলে <strong>Y</strong> চাপুন। আপলোড শুরু হলে বা কিছুক্ষণ চলার পর <strong>Ctrl + C</strong> দিয়ে কেটে দিন।
+                    <i class="fas fa-exclamation-circle"></i>
+                    <strong>নির্দেশনা:</strong> কমান্ড দেওয়ার পর যখন প্রশ্ন করবে "Generate new Android Keystore?" তখন <span style="color:red; font-weight:bold;">Y</span> চাপুন এবং Enter দিন। লেখা উঠলে "Uploaded credentials", তখন <strong>Ctrl + C</strong> দিয়ে কেটে দিন। এটি না করলে GitHub কাজ করবে না।
                 </div>
             </div>
         </section>
@@ -246,7 +236,7 @@ eas build:configure</pre>
             </div>
 
             <div class="step token-step">
-                <h3><span class="badge">৯</span> টোকেন সেটআপ (GitHub Secrets)</h3>
+                <h3><span class="badge">৮</span> টোকেন সেটআপ (GitHub Secrets)</h3>
                 <p>GitHub Repo > Settings > Secrets > Actions এ গিয়ে <code>EXPO_TOKEN</code> নামে নিচের টোকেনটি বসান:</p>
                 
                 <div class="token-box">
@@ -258,8 +248,8 @@ eas build:configure</pre>
             </div>
 
             <div class="step">
-                <h3><span class="badge">১০</span> Workflow ফাইল (YAML Fix)</h3>
-                <p><code>.github/workflows/android_build.yml</code> ফাইল তৈরি করে <strong>হুবহু</strong> নিচের কোডটি পেস্ট করুন (EAS Fix):</p>
+                <h3><span class="badge">৯</span> Workflow ফাইল (YAML)</h3>
+                <p><code>.github/workflows/android_build.yml</code> ফাইল তৈরি করে <strong>হুবহু</strong> নিচের কোডটি পেস্ট করুন:</p>
                 <div class="code-box">
                     <button class="copy-btn" onclick="copyCode('yamlCode')">Copy</button>
                     <pre id="yamlCode">name: Build Android APK
@@ -297,21 +287,21 @@ jobs:
             </div>
 
             <div class="step">
-                <h3><span class="badge">১১</span> আপলোড ও বিল্ড (Updated)</h3>
-                <p>সব কনফিগারেশন গিটহাবে পাঠাতে নিচের কমান্ডগুলো রান করুন:</p>
+                <h3><span class="badge">১০</span> আপলোড ও বিল্ড (Final)</h3>
+                <p>সবকিছু কনফিগার করার পর কোড পুশ করুন। এবার আর কোনো এরর আসবে না!</p>
                 <div class="code-box">
                     <button class="copy-btn" onclick="copyCode('gitCmd')">Copy</button>
                     <pre id="gitCmd">git init
 git config --global http.postBuffer 524288000
 git add .
-git commit -m "Final Build with EAS Config"
+git commit -m "Final Build with Keystore"
 git branch -M main
 git remote remove origin
 git remote add origin https://github.com/USER/REPO.git
 git push -u origin main</pre>
                 </div>
                 <p class="success-text">
-                    ✅ এরপর GitHub Actions ট্যাবে গিয়ে <strong>Run Workflow</strong> দিন। এবার আর EAS Error আসবে না!
+                    ✅ এরপর GitHub Actions ট্যাবে গিয়ে <strong>Re-run jobs</strong> দিন।
                 </p>
             </div>
         </section>
