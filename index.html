@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Web to App Converter Guide</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>🚀 Web to Android App (Ultimate Guide)</h1>
+            <p>ওয়েবসাইট থেকে ১০০% এরর-ফ্রি অ্যাপ তৈরির কমপ্লিট ব্লু-প্রিন্ট</p>
+        </header>
+
+        <!-- PART 1 -->
+        <section class="part">
+            <div class="part-header">
+                <h2>🛠 পার্ট ১: প্রোজেক্ট সেটআপ (Local PC)</h2>
+            </div>
+            
+            <div class="step">
+                <h3><span class="badge">১</span> ফোল্ডার ক্লিনআপ</h3>
+                <p>Master Folder কপি করে রিনেম করুন। VS Code এ ওপেন করে <code>.git</code> এবং <code>.expo</code> ফোল্ডার ডিলিট করুন।</p>
+            </div>
+
+            <div class="step">
+                <h3><span class="badge">২</span> প্যাকেজ ইনস্টল</h3>
+                <div class="code-box">
+                    <button class="copy-btn" onclick="copyCode('cmd1')">Copy</button>
+                    <pre id="cmd1">npx expo install react-native-webview expo-file-system expo-sharing</pre>
+                </div>
+            </div>
+
+            <div class="step">
+                <h3><span class="badge">৩</span> app.json কনফিগার</h3>
+                <p><code>app.json</code> ফাইল ওপেন করে ৩টি জিনিস বদলান এবং ১টি জিনিস মুছুন:</p>
+        <ul>
+            <li><strong>name:</strong> অ্যাপের নতুন নাম দিন (যেমন: "My Shop")</li>
+            <li><strong>slug:</strong> ছোট হাতের নাম, স্পেস ছাড়া (যেমন: "my-shop")</li>
+            <li><strong>android.package:</strong> ইউনিক আইডি দিন (যেমন: "com.myshop.app")</li>
+        </ul>
+            </div>
+        </section>
+
+        <!-- PART 2 -->
+        <section class="part">
+            <div class="part-header">
+                <h2>💻 পার্ট ২: কোডিং ও লজিক (Main Logic)</h2>
+            </div>
+
+            <div class="step">
+                <h3><span class="badge">৪</span> অ্যাপ কোড (app/_layout.tsx)</h3>
+                <p>পুরানো কোড মুছে এই কোডটি দিন। <code>WEBSITE_URL</code> পরিবর্তন করতে ভুলবেন না।</p>
+                <div class="code-box">
+                    <button class="copy-btn" onclick="copyCode('appCode')">Copy</button>
+                    <pre id="appCode">import React, { useRef } from 'react';
+import { SafeAreaView, StatusBar, StyleSheet, Alert, BackHandler } from 'react-native';
+import { WebView } from 'react-native-webview';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+
+export default function App() {
+  const webViewRef = useRef(null);
+  const WEBSITE_URL = 'https://keshab1997.github.io/Gold_Calculator_pro/';
+
+  React.useEffect(() => {
+    const onBackPress = () => {
+      if (webViewRef.current) {
+        webViewRef.current.goBack();
+        return true; 
+      }
+      return false;
+    };
+    BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+  }, []);
+
+  const handleWebViewMessage = async (event) => {
+    try {
+      const messageData = event.nativeEvent.data;
+      let message;
+      try { message = JSON.parse(messageData); } catch (e) { return; }
+
+      if (message.type === 'downloadPDF') {
+        const base64Code = message.data.split(',')[1];
+        const filename = FileSystem.documentDirectory + message.filename;
+
+        await FileSystem.writeAsStringAsync(filename, base64Code, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+
+        if (await Sharing.isAvailableAsync()) {
+          await Sharing.shareAsync(filename);
+        } else {
+          Alert.alert("Saved", "File has been saved!");
+        }
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar hidden={true} backgroundColor="#000" />
+      <WebView
+        ref={webViewRef}
+        source={{ uri: WEBSITE_URL }}
+        style={{ flex: 1 }}
+        javaScriptEnabled={true}
+        domStorageEnabled={true}
+        onMessage={handleWebViewMessage}
+        allowFileAccess={true}
+      />
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#000' },
+});</pre>
+                </div>
+            </div>
+
+            <div class="step">
+                <h3><span class="badge">৫</span> ওয়েব স্ক্রিপ্ট (script.js)</h3>
+                <p>আপনার ওয়েবসাইটের PDF ডাউনলোড ফাংশনটি এভাবে আপডেট করুন:</p>
+                <div class="code-box">
+                    <button class="copy-btn" onclick="copyCode('webJs')">Copy</button>
+                    <pre id="webJs">function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    // ... আপনার পিডিএফ ডিজাইন কোড ...
+
+    if (window.ReactNativeWebView) {
+        // অ্যাপ হলে
+        const pdfData = doc.output('datauristring');
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+            type: 'downloadPDF',
+            data: pdfData, 
+            filename: 'gold_receipt.pdf'
+        }));
+    } else {
+        // ব্রাউজার হলে
+        doc.save("gold_receipt.pdf");
+    }
+}</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- PART 3 -->
+        <section class="part">
+            <div class="part-header">
+                <h2>☁️ পার্ট ৩: সার্ভার কনফিগারেশন</h2>
+            </div>
+
+            <div class="step">
+                <h3><span class="badge">৬</span> EAS কনফিগার</h3>
+                <p>টার্মিনালে এই কমান্ডগুলো দিন:</p>
+                <div class="code-box">
+                    <button class="copy-btn" onclick="copyCode('easCmd')">Copy</button>
+                    <pre id="easCmd">eas login
+eas build:configure</pre>
+                </div>
+                <p style="margin-top:10px;">এরপর <code>eas.json</code> ফাইলে <code>preview</code> এর ভেতর <code>"buildType": "apk"</code> বসান।</p>
+            </div>
+
+            <div class="step">
+                <h3><span class="badge">৭</span> Keystore তৈরি (জরুরি)</h3>
+                <div class="code-box">
+                    <button class="copy-btn" onclick="copyCode('keyCmd')">Copy</button>
+                    <pre id="keyCmd">eas build --platform android --profile preview</pre>
+                </div>
+                <div class="alert warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>টিপস:</strong> "Generate new Keystore?" চাইলে <strong>Y</strong> চাপুন। আপলোড শুরু হলে <strong>Ctrl + C</strong> দিয়ে কেটে দিন।
+                </div>
+            </div>
+        </section>
+
+        <!-- PART 4 -->
+        <section class="part">
+            <div class="part-header">
+                <h2>🚀 পার্ট ৪: গিটহাব অ্যাকশন ও বিল্ড</h2>
+            </div>
+
+            <div class="step token-step">
+                <h3><span class="badge">৮</span> টোকেন সেটআপ (GitHub Secrets)</h3>
+                <p>GitHub Repo > Settings > Secrets > Actions এ গিয়ে <code>EXPO_TOKEN</code> নামে নিচের টোকেনটি বসান:</p>
+                
+                <div class="token-box">
+                    <span id="tokenText">RIEpCFmKIN--zP8sdAWM_6BYu6670yzxAfzPbwfd</span>
+                    <button class="copy-token-btn" onclick="copyCode('tokenText')">
+                        <i class="fas fa-copy"></i> Copy Token
+                    </button>
+                </div>
+            </div>
+
+            <div class="step">
+                <h3><span class="badge">৯</span> Workflow ফাইল (YAML)</h3>
+                <p><code>.github/workflows/android_build.yml</code> ফাইল তৈরি করে পেস্ট করুন:</p>
+                <div class="code-box">
+                    <button class="copy-btn" onclick="copyCode('yamlCode')">Copy</button>
+                    <pre id="yamlCode">name: Build Android APK
+on: workflow_dispatch
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 18.x, cache: npm }
+      - uses: actions/setup-java@v4
+        with: { distribution: 'temurin', java-version: '17' }
+      - uses: expo/expo-github-action@v8
+        with: { eas-version: latest, token: ${{ secrets.EXPO_TOKEN }} }
+      - run: npm install
+      - run: eas build --platform android --profile preview --non-interactive --local --output=app-release.apk
+      - uses: actions/upload-artifact@v4
+        with: { name: my-app-apk, path: app-release.apk }</pre>
+                </div>
+            </div>
+
+            <div class="step">
+                <h3><span class="badge">১০</span> আপলোড ও বিল্ড</h3>
+                <div class="code-box">
+                    <button class="copy-btn" onclick="copyCode('gitCmd')">Copy</button>
+                    <pre id="gitCmd">git init
+git add .
+git commit -m "Final Build"
+git branch -M main
+git remote add origin https://github.com/USER/REPO.git
+git push -u origin main</pre>
+                </div>
+                <p class="success-text">
+                    ✅ এরপর GitHub Actions ট্যাবে গিয়ে <strong>Run Workflow</strong> দিন। ১৫ মিনিট পর APK রেডি!
+                </p>
+            </div>
+        </section>
+
+        <footer>
+            <p>Master Guide Generated for Production</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

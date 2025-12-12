@@ -1,0 +1,173 @@
+:root {
+    --primary: #2563eb;
+    --secondary: #1e293b;
+    --accent: #f59e0b;
+    --bg: #f1f5f9;
+    --code-bg: #1e1e1e;
+    --text: #334155;
+    --token-bg: #dbeafe;
+    --token-text: #1e40af;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 20px;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+header h1 {
+    color: var(--primary);
+    margin-bottom: 10px;
+}
+
+.part {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+    overflow: hidden;
+}
+
+.part-header {
+    background: var(--secondary);
+    color: white;
+    padding: 15px 25px;
+}
+
+.part-header h2 {
+    margin: 0;
+    font-size: 1.3rem;
+}
+
+.step {
+    padding: 25px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.step:last-child {
+    border-bottom: none;
+}
+
+.step h3 {
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+    color: var(--secondary);
+}
+
+.badge {
+    background: var(--primary);
+    color: white;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin-right: 12px;
+    font-size: 0.9rem;
+}
+
+/* Code Box Styling */
+.code-box {
+    position: relative;
+    margin-top: 15px;
+}
+
+pre {
+    background: var(--code-bg);
+    color: #a5b3ce;
+    padding: 15px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-family: 'Consolas', monospace;
+    font-size: 14px;
+}
+
+.copy-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.copy-btn:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+/* Token Box Styling - Special */
+.token-step {
+    background-color: #f8fafc;
+}
+
+.token-box {
+    background: var(--token-bg);
+    color: var(--token-text);
+    padding: 20px;
+    border-radius: 8px;
+    border: 2px dashed var(--primary);
+    font-family: monospace;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    word-break: break-all;
+}
+
+.copy-token-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+    white-space: nowrap;
+}
+
+.copy-token-btn:hover {
+    background: var(--secondary);
+}
+
+.alert {
+    padding: 15px;
+    border-radius: 6px;
+    margin-top: 15px;
+    font-size: 0.95rem;
+}
+.warning { background: #fff7ed; color: #9a3412; border: 1px solid #ffedd5; }
+.highlight-red { color: #dc2626; font-weight: bold; }
+.success-text { color: #16a34a; font-weight: bold; margin-top: 15px; }
+
+footer {
+    text-align: center;
+    margin-top: 40px;
+    color: #94a3b8;
+    padding-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+    .token-box { flex-direction: column; gap: 10px; text-align: center; }
+    .copy-token-btn { width: 100%; margin: 0; }
+}
