@@ -132,68 +132,78 @@ const styles = StyleSheet.create({
                 <div class="code-box">
                     <button class="copy-btn" onclick="copyCode('webJs')">Copy</button>
                     <pre id="webJs">// পিডিএফ ডাউনলোড ফাংশন
-window.downloadPDF = function() {
-    if (!window.jspdf) return alert("PDF Library missing!");
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-
-    // 1. ডাটা এবং ক্যালকুলেশন
-    const totalAmount = currentData.reduce((sum, item) => sum + item.amount, 0);
-    const fromDate = document.getElementById('fromDate').value;
-    const toDate = document.getElementById('toDate').value;
-    
-    const fmt = (d) => d ? d.split('-').reverse().join('/') : '';
-    const dateRangeText = (fromDate && toDate) ? `${fmt(fromDate)} to ${fmt(toDate)}` : `Generated: ${new Date().toLocaleDateString('en-IN')}`;
-
-    // 2. পিডিএফ ডিজাইন (Header & Total)
-    doc.setFontSize(20); doc.setTextColor(41, 128, 185); doc.text("Expense Report", 14, 20);
-    doc.setFontSize(10); doc.setTextColor(100); doc.text(`Period: ${dateRangeText}`, 14, 27);
-
-    doc.setFontSize(11); doc.setTextColor(80); doc.text("Total Expenses:", 196, 18, { align: "right" }); 
-    doc.setFontSize(16); doc.setTextColor(220, 38, 38); doc.setFont("helvetica", "bold");
-    doc.text(`Rs. ${totalAmount.toLocaleString('en-IN')}`, 196, 26, { align: "right" });
-    doc.setFont("helvetica", "normal");
-
-    // 3. টেবিল তৈরি
-    const tableBody = currentData.map(item => [
-        formatDateDisplay(item.date), 
-        item.category || 'General', 
-        item.payee, 
-        item.purpose, 
-        `Rs. ${item.amount.toLocaleString('en-IN')}`
-    ]);
-
-    doc.autoTable({
-        startY: 35,
-        head: [['Date', 'Category', 'Payee', 'Purpose', 'Amount']],
-        body: tableBody,
-        foot: [[ { content: 'Grand Total', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold' } }, { content: `Rs. ${totalAmount.toLocaleString('en-IN')}`, styles: { halign: 'right', fontStyle: 'bold' } } ]],
-        theme: 'striped',
-        headStyles: { fillColor: [41, 128, 185], halign: 'left', fontStyle: 'bold', valign: 'middle' },
-        columnStyles: { 
-            0: { cellWidth: 25, halign: 'left' },
-            1: { halign: 'left' },
-            2: { halign: 'left' },
-            3: { halign: 'left' },
-            4: { halign: 'right', fontStyle: 'bold' }
-        },
-        styles: { fontSize: 9, cellPadding: 3, valign: 'middle' }
-    });
-
-    // 4. ডাউনলোড লজিক (Web vs App)
-    if (window.ReactNativeWebView) {
-        // অ্যাপের জন্য
-        const pdfData = doc.output('datauristring');
-        window.ReactNativeWebView.postMessage(JSON.stringify({
-            type: 'downloadPDF',
-            data: pdfData, 
-            filename: 'Expense_Report.pdf'
-        }));
-    } else {
-        // ওয়েবসাইটের জন্য
-        doc.save('Expense_Report.pdf');
+// =========================================
+// 7. PDF DOWNLOAD (Improved for Mobile/Expo)
+// =========================================
+function downloadPDF() {
+    if (!currentFilteredData || currentFilteredData.length === 0) {
+        alert("No data to download!");
+        return;
     }
-}</pre>
+
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // 1. Header Section
+        const totalAmount = document.getElementById('totalAmount').innerText;
+        const fromDate = document.getElementById('fromDate').value;
+        const toDate = document.getElementById('toDate').value;
+
+        doc.setFontSize(18);
+        doc.text("Expense Report", 14, 15);
+        
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        doc.text(`Date Range: ${fromDate} to ${toDate}`, 14, 22);
+        
+        // Total Amount Highlight
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0); // Black
+        doc.setFont("helvetica", "bold");
+        doc.text(`Total Expense: INR ${totalAmount}`, 14, 29);
+
+        // 2. Table Data Formatting
+        // টেবিলের ডাটা ম্যাপ করা (Action কলাম বাদ দেওয়া)
+        const tableData = currentFilteredData.map(item => [
+            item.date,
+            item.category,
+            item.payee,
+            item.purpose || '-',
+            Number(item.amount).toFixed(2) // টাকার সিম্বল ছাড়া শুধু সংখ্যা
+        ]);
+
+        // 3. Generate Table
+        doc.autoTable({
+            head: [['Date', 'Category', 'Payee', 'Purpose', 'Amount']],
+            body: tableData,
+            startY: 35,
+            theme: 'grid',
+            headStyles: { fillColor: [37, 99, 235] }, // Blue Header
+            columnStyles: {
+                4: { halign: 'right', fontStyle: 'bold' } // Amount Right Align
+            },
+            styles: { fontSize: 9, cellPadding: 3 }
+        });
+
+        // 4. ডাউনলোড লজিক (Web vs App)
+        if (window.ReactNativeWebView) {
+            // অ্যাপের জন্য
+            const pdfData = doc.output('datauristring');
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+                type: 'downloadPDF',
+                data: pdfData, 
+                filename: 'Expense_Report.pdf'
+            }));
+        } else {
+            // ওয়েবসাইটের জন্য
+            doc.save('Expense_Report.pdf');
+        }
+    } catch (error) {
+        console.error("PDF Generation Error:", error);
+        alert("Failed to generate PDF");
+    }
+                    
                 </div>
             </div>
         </section>
